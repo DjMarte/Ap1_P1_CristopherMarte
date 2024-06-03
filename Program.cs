@@ -1,3 +1,4 @@
+using Ap1_P1_CristopherMarte.ArticulosServices;
 using Ap1_P1_CristopherMarte.Components;
 using Ap1_P1_CristopherMarte.DAL;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ builder.Services.AddRazorComponents()
 
 var ConStr = builder.Configuration.GetConnectionString("ConStr");
 builder.Services.AddDbContextFactory<Contexto>(o => o.UseSqlite(ConStr));
+builder.Services.AddScoped<ArticuloService>();
 
 builder.Services.AddBlazorBootstrap();
 
