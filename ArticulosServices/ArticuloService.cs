@@ -62,7 +62,7 @@ public class ArticuloService
 			.ToListAsync();
 	}
 
-	public decimal CalcularPrecioVenta(decimal costo, int porcentajeGanancia) {
+	public decimal CalcularVenta(decimal costo, int porcentajeGanancia) {
 		decimal ganancia = costo * porcentajeGanancia / 100;
 		return costo + ganancia;
 	}
