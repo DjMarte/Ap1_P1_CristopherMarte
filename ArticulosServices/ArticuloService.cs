@@ -61,9 +61,4 @@ public class ArticuloService
 			.Where(criterio)
 			.ToListAsync();
 	}
-
-	public decimal CalcularVenta(decimal costo, int porcentajeGanancia) {
-		decimal ganancia = costo * porcentajeGanancia / 100;
-		return costo + ganancia;
-	}
 }
