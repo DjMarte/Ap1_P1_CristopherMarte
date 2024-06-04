@@ -9,7 +9,7 @@
 	<div class="shadow-lg">
 		@*Header*@
 		<div class="card-header text-center">
-				<h3><strong>Eliminar Articulo</strong></h3>
+				<h3><strong>Eliminar Art&iacute;culo</strong></h3>
 		</div>
 		@*Body*@
 		<div class="card-body">
@@ -17,7 +17,7 @@
 				<h3><strong>¿Desea eliminar el art&iacute;culo @Articulo.Descripcion?</strong></h3>
 			</div>
 			<ul>
-				<li><strong>Art&iacute;culoId: </strong>@Articulo.ArticuloId</li>
+				<li><strong>ArticuloId: </strong>@Articulo.ArticuloId</li>
 				<li><strong>Descripci&oacute;n: </strong>@Articulo.Descripcion</li>
 				<li><strong>Costo: </strong>@Articulo.Costo.ToString("N2")</li>
 				<li><strong>Ganancia: </strong>@Articulo.Ganancia.ToString("N2")</li>
@@ -28,7 +28,7 @@
 		<div class="card-footer">
 			<div class="text-center">
 				<button type="button" class="btn btn-outline-primary" @onclick="()=>Volver()"><Icon Name="IconName.Arrow90DegLeft"></Icon> Volver</button>
-				<button type="submit" class="btn btn-outline-danger"><Icon Name="IconName.Trash"></Icon> Modificar</button>
+				<button type="button" class="btn btn-outline-danger" @onclick="()=>Eliminar()"><Icon Name="IconName.Trash"></Icon> Eliminar</button>
 			</div>
 		</div>
 	</div>
