@@ -1,0 +1,71 @@
+﻿@page "/Articulo/Delete/{ArticuloId:int}"
+
+@inject ArticuloService articuloService
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<PageTitle>Eliminar T&eacute;cnico</PageTitle>
+<div class="card">
+	<div class="shadow-lg">
+		@*Header*@
+		<div class="card-header text-center">
+				<h3><strong>Eliminar Articulo</strong></h3>
+		</div>
+		@*Body*@
+		<div class="card-body">
+			<div class="text-center">
+				<h3><strong>¿Desea eliminar el art&iacute;culo @Articulo.Descripcion?</strong></h3>
+			</div>
+			<ul>
+				<li><strong>Art&iacute;culoId: </strong>@Articulo.ArticuloId</li>
+				<li><strong>Descripci&oacute;n: </strong>@Articulo.Descripcion</li>
+				<li><strong>Costo: </strong>@Articulo.Costo.ToString("N2")</li>
+				<li><strong>Ganancia: </strong>@Articulo.Ganancia.ToString("N2")</li>
+				<li><strong>Precio: </strong>@Articulo.Precio.ToString("N2")</li>
+			</ul>
+		</div>
+		@*Footer*@
+		<div class="card-footer">
+			<div class="text-center">
+				<button type="button" class="btn btn-outline-primary" @onclick="()=>Volver()"><Icon Name="IconName.Arrow90DegLeft"></Icon> Volver</button>
+				<button type="submit" class="btn btn-outline-danger"><Icon Name="IconName.Trash"></Icon> Modificar</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+@code {
+	[Parameter]
+	public int ArticuloId { get; set; }
+	public Articulos Articulo { get; set; } = new Articulos();
+
+	public List<ToastMessage> Mensaje = new List<ToastMessage>();
+
+	protected override async Task OnInitializedAsync() {
+		Articulo = await articuloService.Buscar(ArticuloId);
+	}
+
+	private ToastMessage ShowToast(ToastType toastType, string message) {
+		var mensaje = new ToastMessage() {
+				Type = toastType,
+				Message = $"{message}. El {DateTime.Now.ToString("dd/MM/yyyy")} a las {DateTime.Now.ToString("hh:mm tt")}",
+			};
+		toastService.Notify(mensaje);
+		return mensaje;
+	}
+
+	public void Notificacion(ToastType toastType, string message) => Mensaje.Add(ShowToast(toastType, message));
+
+	public async Task Eliminar() {
+		var eliminar = await articuloService.Eliminar(Articulo);
+		if (eliminar)
+			Notificacion(ToastType.Success, "Se ha eliminado correctamente el Tecnico");
+
+		else
+			Notificacion(ToastType.Danger, "No se ha podido eliminar el Tecnico");
+	}
+
+	public void Volver() {
+		Navigation.NavigateTo("/Articulo/Index");
+	}
+}
