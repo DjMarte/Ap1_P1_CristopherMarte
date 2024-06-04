@@ -59,10 +59,10 @@
 	public async Task Eliminar() {
 		var eliminar = await articuloService.Eliminar(Articulo);
 		if (eliminar)
-			Notificacion(ToastType.Success, "Se ha eliminado correctamente el Tecnico");
+			Notificacion(ToastType.Success, $"Se ha eliminado correctamente el artículo {Articulo.Descripcion}");
 
 		else
-			Notificacion(ToastType.Danger, "No se ha podido eliminar el Tecnico");
+			Notificacion(ToastType.Danger, "No se ha podido eliminar el artículo");
 	}
 
 	public void Volver() {
