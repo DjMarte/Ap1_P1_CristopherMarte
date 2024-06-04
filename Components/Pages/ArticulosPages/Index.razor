@@ -1,0 +1,130 @@
+﻿@page "/Articulo/Index"
+
+
+@inject ArticuloService articuloService
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<PageTitle></PageTitle>
+<div class="container">
+	<div class="card shadow-lg">
+		@*Header*@
+		<div class="card-header">
+			<div class="text-center">
+				<h3><strong>Listado de Articulos</strong></h3>
+			</div>
+			<div class="text-end">
+				<button type="button" class="btn btn-outline-primary" @onclick="MostrarPantallaCrear"> <Icon Name="IconName.Plus" /> Nuevo</button>
+			</div>
+		</div>
+		@*Body*@
+		<div class="card-body">
+			@*Labesl*@
+			<div class="row">
+				<div class="col-3">
+					<label class="form-label" for="Filtro"><strong>Filtrar por</strong></label>
+				</div>
+				<div class="col-4">
+					<label class=" form-label" for="valorFiltro"><strong>B&uacute;squeda</strong></label>
+				</div>
+			</div>
+			@*Inputs y buttons*@
+			<div class="row">
+				@*Filtro*@
+				<div class="col-3">
+					<InputSelect class="form-select" @bind-Value="filtro">
+						<option value="">Elija una opci&oacute;n</option>
+						<option value="Id">Id</option>
+						<option value="Descripcion">Descripci&oacute;n</option>
+					</InputSelect>
+				</div>
+				@*Busqueda*@
+				<div class="col-4">
+					<div class="input-group">
+						<input class="form-control" @bind-value="valorFiltro" placeholder="Buscar" />
+						<button type="button" class="btn btn-outline-primary" @onclick="Buscar"> <Icon Name="IconName.Search"></Icon></button>
+					</div>
+				</div>
+				@*Restablecer*@
+				<div class="col-auto">
+					<button type="button" class="btn btn-outline-secondary" @onclick="Restablecer"> <Icon Name="IconName.ArrowCounterclockwise"></Icon> Restablecer</button>
+				</div>
+			</div>
+			@*Tabla*@
+			<table class="table table-bordered mt-3 text-center">
+				<thead>
+					<tr>
+						<th>ArticuloId</th>
+						<th>Descripci&oacute;n</th>
+						<th>Costo</th>
+						<th>Porciento de Ganancia</th>
+						<th>Precio</th>
+						<th>Editar</th>
+						<th>Eliminar</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var articulo in ListaArticulo) {
+						<tr>
+							<td>@articulo.ArticuloId</td>
+							<td>@articulo.Descripcion</td>
+							<td>@articulo.Costo</td>
+							<td>@articulo.Ganancia</td>
+							<td>@VentaArticulo(articulo)</td>
+							<td><button type="button" class="btn btn-outline-warning" @onclick="()=> MostrarPantallaEditar(articulo.ArticuloId)"> <Icon Name="IconName.Pencil"></Icon></button></td>
+							<td><button type="button" class="btn btn-outline-danger" @onclick="()=> MostrarPantallaEliminar(articulo.ArticuloId)"> <Icon Name="IconName.Trash"></Icon></button></td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+		@*Footer*@
+		<div class="card-footer">
+			<p><strong>Articulos agregados: </strong>@ListaArticulo.Count()</p>
+		</div>
+	</div>
+</div>
+
+@code {
+	public List<Articulos> ListaArticulo { get; set; } = new List<Articulos>();
+	public string? filtro { get; set; }
+	public string? valorFiltro { get; set; }
+
+	protected override async Task OnInitializedAsync() {
+		ListaArticulo = await articuloService.Listar(t => true);
+		filtro = string.Empty;
+		valorFiltro = string.Empty;
+	}
+
+	private async Task Buscar() {
+		if (valorFiltro.Trim() != "") {
+			if (filtro == "Id" && int.TryParse(valorFiltro, out int articuloId))
+				ListaArticulo = await articuloService.Listar(t => t.ArticuloId == articuloId);
+			else if (filtro == "Descripcion")
+				ListaArticulo = await articuloService.Listar(t => t.Descripcion!.ToLower().Contains(valorFiltro.ToLower()));
+		}
+		else
+			ListaArticulo = await articuloService.Listar(t => true);
+	}
+
+	public decimal VentaArticulo(Articulos articulos) {
+		decimal ganancia = (articulos.Costo * articulos.Ganancia) / 100;
+		return articulos.Costo + ganancia;
+	}
+
+	private async Task Restablecer() {
+		ListaArticulo = await articuloService.Listar(t => true);
+	}
+
+	public void MostrarPantallaCrear() {
+		Navigation.NavigateTo("/Articulo/Create");
+	}
+
+	public void MostrarPantallaEditar(int id) {
+		Navigation.NavigateTo($"/Articulo/Edit/{id}");
+	}
+
+	public void MostrarPantallaEliminar(int id) {
+		Navigation.NavigateTo($"/Articulo/Delete/{id}");
+	}
+}
