@@ -13,17 +13,14 @@ public class Articulos
     [Required(ErrorMessage = "Descripcion obligatorio")]
     public string? Descripcion { get; set; }
 
-    [RegularExpression(@"^[0-9]+$", ErrorMessage = "Solo se permiten numeros")]
     [Range(0.01, 1000000, ErrorMessage = "Ingrese un valor mayor a 0.01 y menor o igual a 1000000")]
     [Required(ErrorMessage = "Costo obligatorio")]
     public decimal Costo{ get; set; }
 
-    
-	[RegularExpression(@"^[0-9]+$", ErrorMessage = "Solo se permiten numeros")]
+    [Range(0,100, ErrorMessage = "Solo se permite de 0 a 100")]
 	[Required(ErrorMessage = "Ganancia obligatoria")]
 	public decimal Ganancia { get; set; }
 
-	[RegularExpression(@"^[0-9]+$", ErrorMessage = "Solo se permiten numeros")]
 	[Range(0.01, 1000000, ErrorMessage = "Ingrese un valor mayor a 0.01 y menor o igual a 1000000")]
     [Required(ErrorMessage = "Precio obligatorio")]
     public decimal Precio { get; set; }
