@@ -5,7 +5,7 @@
 @rendermode InteractiveServer
 
 <PageTitle>Modificar Art&iacute;culo</PageTitle>
-<EditForm Model="Articulo" OnValidSubmit="Modificar">
+<EditForm Model="Articulos" OnValidSubmit="Modificar">
 	<DataAnnotationsValidator />
 	<div class="container">
 		<div class="card shadow-lg">
@@ -19,32 +19,31 @@
 					@*Id*@
 					<div class="col-1">
 						<label class="form-label" for="Id"><strong>Art&iacute;culoId</strong></label>
-						<InputNumber class="form-control" id="Id" @bind-Value="Articulo.ArticuloId" readonly></InputNumber>
+						<InputNumber class="form-control" id="Id" @bind-Value="Articulos.ArticuloId" readonly></InputNumber>
 					</div>
 				</div>
 				@*Descripcion*@
 				<div class="col-3">
 					<label class="form-label" for="descripcion"><strong>Descripci&oacute;n</strong></label>
-					<InputText class="form-control" id="descripcion" @bind-Value="Articulo.Descripcion"></InputText>
-					<ValidationMessage For="(()=> Articulo.Descripcion)" />
+					<InputText class="form-control" id="descripcion" @bind-Value="Articulos.Descripcion"></InputText>
+					<ValidationMessage For="(()=> Articulos.Descripcion)" />
 				</div>
 				@*Costo*@
 				<div class="col-3">
 					<label class="form-label" for="costo"><strong>Costo</strong></label>
-					<InputNumber class="form-control" id="costo" @bind-Value="Articulo.Costo"></InputNumber>
-					<ValidationMessage For="(()=> Articulo.Costo)" />
+					<input type="number" class="form-control" id="costo" @bind="Costo" @bind:event="oninput"></input>
+					<ValidationMessage For="(()=> Articulos.Costo)" />
 				</div>
 				@*Ganancia*@
 				<div class="col-2">
 					<label class="form-label" for="Ganancia"><strong>Ganancia</strong></label>
-					<InputNumber class="form-control" id="Ganancia" @bind-Value="Articulo.Ganancia"></InputNumber>
-					<ValidationMessage For="(()=> Articulo.Ganancia)" />
+					<input type="number" class="form-control" id="Ganancia" @bind="Ganancia" @bind:event="oninput"></input>
+					<ValidationMessage For="(()=> Articulos.Ganancia)" />
 				</div>
 				@*Precio*@
 				<div class="col-3">
-				<label class="form-label" for="Precio"><strong>Precio</strong></label>
-				<InputNumber class="form-control" id="Precio" @bind-Value="Articulo.Precio"></InputNumber>
-				<ValidationMessage For="(()=> Articulo.Precio)" />
+					<label class="form-label" for="Precio"><strong>Precio</strong></label>
+					<label class="form-control" id="Precio" readonly>@Articulos.Precio.ToString("N2")</label>
 				</div>
 
 			</div>
@@ -60,11 +59,11 @@
 @code {
 	[Parameter]
 	public int ArticuloId { get; set; }
-	public Articulos Articulo { get; set; } = new Articulos();
+	public Articulos Articulos { get; set; } = new Articulos();
 	public List<ToastMessage> Mensaje = new List<ToastMessage>();
 
 	protected override async Task OnInitializedAsync() {
-		Articulo = await articuloService.Buscar(ArticuloId);
+		Articulos = await articuloService.Buscar(ArticuloId);
 	}
 
 	private ToastMessage ShowToast(ToastType toastType, string message) {
@@ -83,22 +82,45 @@
 			Notificacion(ToastType.Warning, "Ya existe un articulo con esta descripción");
 			return;
 		}
-		var crear = await articuloService.Guardar(Articulo);
+		var crear = await articuloService.Guardar(Articulos);
 		if (crear) {
-			Notificacion(ToastType.Success, $"El artículo {Articulo.Descripcion} se ha actualizado correctamente");
-			Nuevo();
+			Notificacion(ToastType.Success, $"El artículo {Articulos.Descripcion} se ha actualizado correctamente");
+			Volver();
 		}
 		else
 			Notificacion(ToastType.Danger, "No se ha modificado correctamente");
 	}
 
-	private async Task<bool> Validar() {
-		var existe = await articuloService.ExisteDescripcion(Articulo.ArticuloId, Articulo.Descripcion!);
-		return existe;
+	public double Costo {
+		get => (double)Articulos.Costo;
+		set
+		{
+			if ((double)Articulos.Costo != value) {
+				Articulos.Costo = (decimal)value;
+				CalcularPrecio();
+			}
+		}
 	}
 
-	private void Nuevo() {
-		Articulo = new Articulos();
+	public double Ganancia {
+		get => (double)Articulos.Ganancia;
+		set
+		{
+			if ((double)Articulos.Ganancia != value) {
+				Articulos.Ganancia = (decimal)value;
+				CalcularPrecio();
+			}
+		}
+
+	}
+
+	private void CalcularPrecio() {
+		Articulos.Precio = Articulos.Costo + (Articulos.Costo * (Articulos.Ganancia / 100));
+	}
+
+	private async Task<bool> Validar() {
+		var existe = await articuloService.ExisteDescripcion(Articulos.ArticuloId, Articulos.Descripcion!);
+		return existe;
 	}
 
 	private void Volver() {
