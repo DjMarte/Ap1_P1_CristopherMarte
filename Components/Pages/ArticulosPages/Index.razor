@@ -1,6 +1,5 @@
 ﻿@page "/Articulo/Index"
 
-
 @inject ArticuloService articuloService
 @inject NavigationManager Navigation
 @rendermode InteractiveServer
@@ -70,7 +69,7 @@
 							<td>@articulo.Descripcion</td>
 							<td>@articulo.Costo</td>
 							<td>@articulo.Ganancia</td>
-							<td>@VentaArticulo(articulo)</td>
+							<td>@articulo.Precio</td>
 							<td><button type="button" class="btn btn-outline-warning" @onclick="()=> MostrarPantallaEditar(articulo.ArticuloId)"> <Icon Name="IconName.Pencil"></Icon></button></td>
 							<td><button type="button" class="btn btn-outline-danger" @onclick="()=> MostrarPantallaEliminar(articulo.ArticuloId)"> <Icon Name="IconName.Trash"></Icon></button></td>
 						</tr>
@@ -107,13 +106,10 @@
 			ListaArticulo = await articuloService.Listar(t => true);
 	}
 
-	public decimal VentaArticulo(Articulos articulos) {
-		decimal ganancia = (articulos.Costo * articulos.Ganancia) / 100;
-		return articulos.Costo + ganancia;
-	}
-
 	private async Task Restablecer() {
 		ListaArticulo = await articuloService.Listar(t => true);
+		filtro = string.Empty;
+		valorFiltro = string.Empty;
 	}
 
 	public void MostrarPantallaCrear() {
