@@ -2,8 +2,6 @@
 
 namespace Ap1_P1_CristopherMarte.Models;
 
-//Precio = (Costo * %)/100 + costo
-
 public class Articulos
 {
     [Key]

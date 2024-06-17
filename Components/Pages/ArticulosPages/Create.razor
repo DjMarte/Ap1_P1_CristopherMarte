@@ -31,20 +31,19 @@
 				@*Costo*@
 				<div class="col-3">
 					<label class="form-label" for="costo"><strong>Costo</strong></label>
-					<InputNumber class="form-control" id="costo" @bind-Value="Articulos.Costo"></InputNumber>
+					<input type="number" class="form-control" id="costo" @bind="Costo" @bind:event="oninput"></input>
 					<ValidationMessage For="(()=> Articulos.Costo)" />
 				</div>
 				@*Ganancia*@
 				<div class="col-2">
 					<label class="form-label" for="Ganancia"><strong>Ganancia</strong></label>
-					<InputNumber class="form-control" id="Ganancia" @bind-Value="Articulos.Ganancia"></InputNumber>
+					<input type="number" class="form-control" id="Ganancia" @bind="Ganancia" @bind:event="oninput"></input>
 					<ValidationMessage For="(()=> Articulos.Ganancia)" />
 				</div>
 				@*Precio*@
 				<div class="col-3">
 					<label class="form-label" for="Precio"><strong>Precio</strong></label>
-					<InputNumber class="form-control" id="Precio" @bind-Value="Articulos.Precio"></InputNumber>
-					<ValidationMessage For="(()=> Articulos.Precio)" />
+					<label class="form-control" id="Precio" readonly>@Articulos.Precio.ToString("N2")</label>
 				</div>
 
 			</div>
@@ -80,19 +79,42 @@
 		var crear = await articuloService.Guardar(Articulos);
 		if (crear) {
 			Notificacion(ToastType.Success, $"El artículo {Articulos.Descripcion} se ha creado correctamente");
-			Nuevo();
+			Volver();
 		}
 		else
 			Notificacion(ToastType.Danger, "No se ha creado correctamente");
 	}
 
+	public decimal Costo{
+		get => Articulos.Costo;
+		set
+		{
+			if(Articulos.Costo != value) {
+				Articulos.Costo = value;
+				CalcularPrecio();
+			}
+		}
+	}
+
+	public decimal Ganancia {
+		get => Articulos.Ganancia;
+		set
+		{
+			if(Articulos.Ganancia != value) {
+				Articulos.Ganancia = value;
+				CalcularPrecio();
+			}
+		}
+
+	}
+
+	private void CalcularPrecio() {
+		Articulos.Precio = Articulos.Costo + (Articulos.Costo * (Articulos.Ganancia / 100));
+	}
+
 	private async Task<bool> Validar() {
 		var existe = await articuloService.ExisteDescripcion(Articulos.ArticuloId, Articulos.Descripcion!);
 		return existe;
-	}
-
-	private void Nuevo() {
-		Articulos = new Articulos();
 	}
 
 	private void Volver() {
